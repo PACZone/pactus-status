@@ -64,7 +64,7 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 		fmt.Println("got circ supply successfully")
 
 		msg := makeMessage(bi, cs, td, status, lbt, lbh)
-		_, err = b.SendMessage(ctx, makeMessageParams(msg))
+		_, err = b.EditMessageText(ctx, makeMessageParams(msg))
 		if err != nil {
 			fmt.Printf("can't post updates: %v\n", err)
 		}
@@ -114,11 +114,12 @@ func networkHealth(cmgr *client.Mgr) (string, string, uint32, int64) {
 	return status, lastBlockTimeFormatted, lastBlockHeight, timeDiff
 }
 
-func makeMessageParams(t string) *bot.SendMessageParams {
-	return &bot.SendMessageParams{
+func makeMessageParams(t string) *bot.EditMessageTextParams {
+	return &bot.EditMessageTextParams{
 		ChatID:    "@pactus_status",
 		Text:      t,
 		ParseMode: models.ParseModeMarkdown,
+		MessageID: 12,
 	}
 }
 
