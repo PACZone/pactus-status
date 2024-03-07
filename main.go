@@ -77,7 +77,7 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 		}
 		fmt.Println("updated posted successfully")
 
-		time.Sleep(5 * time.Minute)
+		time.Sleep(1 * time.Minute)
 	}
 }
 
@@ -85,16 +85,16 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	var s strings.Builder
 
 	s.WriteString("🔴 Pactus Network Status Update\n\n")
-	s.WriteString("Blockchain Info\n\n")
-	s.WriteString(fmt.Sprintf("⛓️ **%s** is Last Block Height\n\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("👤 **%v** Active Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("🕵️ **%v** Total Validators\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("🦾 **%v** Total PAC Staked or network power\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("🦾 **%v PAC** is Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString("ℹ️ Blockchain Info\n")
+	s.WriteString(fmt.Sprintf("⛓️ **%s** is Last Block Height\n", formatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("👤 **%v** Active Accounts\n", formatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("🕵️ **%v** Total Validators\n", formatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("🦾 **%v** Total PAC Staked\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🦾 **%v PAC** is Committee Power\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
-	s.WriteString("🧑🏻‍⚕️ Network Status\n\n")
-	s.WriteString(fmt.Sprintf("Network is **%s**\n\n**%s** is The LastBlock time and there is **%v seconds** passed from last block", status, lastBlkTime, timeDiff))
+	s.WriteString("🧑🏻‍⚕️ Network Status\n")
+	s.WriteString(fmt.Sprintf("```Network is **%s**\n\n**%s** is The LastBlock time and there is **%v seconds** passed from last block```", status, lastBlkTime, timeDiff))
 
 	return s.String()
 }
