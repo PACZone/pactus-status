@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 	"github.com/kehiy/pactatus/client"
 	"github.com/pactus-project/pactus/util"
 	pactus "github.com/pactus-project/pactus/www/grpc/gen/go"
@@ -71,15 +70,15 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 
 	s.WriteString("Pactus Network Status Update 🔴\n\n")
 	s.WriteString("Blockchain Info\n\n")
-	s.WriteString(fmt.Sprintf("**%s** is Last Block Height⛓️\n\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("**%v** Active Accounts👤\n\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("**%v** Total Validators🕵️\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("**%v** Total PAC Staked (network power)🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("**%v** Committee Power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("**%v** PAC is in Circulating🔄\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString(fmt.Sprintf("%s is Last Block Height⛓️\n\n", formatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("%v Active Accounts👤\n\n", formatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("%v Total Validators🕵️\n\n", formatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("%v Total PAC Staked (network power)🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("%v Committee Power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("%v PAC is in Circulating🔄\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
 	s.WriteString("Network Status🧑🏻‍⚕️\n\n")
-	s.WriteString(fmt.Sprintf("Network is **%s**\n\n**%s** is The LastBlock time and there is **%v seconds** passed from last block", status, lastBlkTime, timeDiff))
+	s.WriteString(fmt.Sprintf("Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block", status, lastBlkTime, timeDiff))
 
 	return s.String()
 }
@@ -108,9 +107,8 @@ func networkHealth(cmgr *client.Mgr) (string, string, uint32, int64) {
 
 func makeMessageParams(t string) *bot.SendMessageParams {
 	return &bot.SendMessageParams{
-		ChatID:    "@pactatus",
-		Text:      t,
-		ParseMode: models.ParseModeMarkdown,
+		ChatID: "@pactatus",
+		Text:   t,
 	}
 }
 
