@@ -21,14 +21,18 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	fmt.Println("starting")
+
 	cmgr := client.NewClientMgr(ctx)
 
 	for _, rn := range rpcNodes {
 		c, e := client.NewClient(rn)
 		if e != nil {
+			fmt.Printf("error: %v adding client %s\n", e, rn)
 			continue
 		}
 		cmgr.AddClient(c)
+		fmt.Printf("client added %s\n", rn)
 	}
 
 	b, err := bot.New("6632503496:AAEr6zh6btUazt74T5xe9UI_gi2A31MBD10", nil)
@@ -42,9 +46,11 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
+	fmt.Println("started posting")
 	time.Sleep(10 * time.Second)
 
 	for {
+		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
 		bi, err := cmgr.GetBlockchainInfo()
 		if err != nil {
