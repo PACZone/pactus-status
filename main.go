@@ -46,9 +46,6 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
-	fmt.Println("started posting")
-	time.Sleep(10 * time.Second)
-
 	for {
 		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
