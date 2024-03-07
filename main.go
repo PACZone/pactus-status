@@ -76,6 +76,8 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 			fmt.Printf("can't post updates: %v\n", err)
 		}
 		fmt.Println("updated posted successfully")
+
+		time.Sleep(7 * time.Second)
 	}
 }
 
@@ -89,10 +91,10 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("🕵️ **%v** Total Validators\n", formatNumber(int64(b.TotalValidators))))
 	s.WriteString(fmt.Sprintf("🦾 **%v** Total PAC Staked\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
 	s.WriteString(fmt.Sprintf("🦾 **%v PAC** is Committee Power\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
-	s.WriteString("🧑🏻‍⚕️ Network Status\n")
-	s.WriteString(fmt.Sprintf("```Network is **%s**\n\n**%s** is The LastBlock time and there is **%v seconds** passed from last block```", status, lastBlkTime, timeDiff))
+	s.WriteString("🧑🏻‍⚕️ Network Status\n\n")
+	s.WriteString(fmt.Sprintf("```Details Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
 
 	return s.String()
 }
