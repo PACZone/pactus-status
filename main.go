@@ -54,13 +54,21 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 			panic(err)
 		}
 
+		fmt.Println("got network health and Blockcahin info successfully")
+
 		cs, err := cmgr.GetCirculatingSupply()
 		if err != nil {
 			panic(err)
 		}
 
+		fmt.Println("got circ supply successfully")
+
 		msg := makeMessage(bi, cs, td, status, lbt, lbh)
-		b.SendMessage(ctx, makeMessageParams(msg))
+		_, err = b.SendMessage(ctx, makeMessageParams(msg))
+		if err != nil {
+			fmt.Printf("can't post updates: %v\n", err)
+		}
+		fmt.Println("updated posted successfully")
 
 		time.Sleep(5 * time.Minute)
 	}
