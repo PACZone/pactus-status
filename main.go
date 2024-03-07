@@ -85,16 +85,15 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	var s strings.Builder
 
 	s.WriteString("🔴 Pactus Network Status Update\n\n")
-	s.WriteString("ℹ️ Blockchain Info\n")
-	s.WriteString(fmt.Sprintf("⛓️ **%s** is Last Block Height\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("👤 **%v** Active Accounts\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("🕵️ **%v** Total Validators\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("🦾 **%v** Total PAC Staked\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("🦾 **%v PAC** is Committee Power\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString("ℹ️ Blockchain Info\n\n")
+	s.WriteString(fmt.Sprintf("⛓️ **%s** Last Block Height\n\n", formatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("👤 **%v** Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("🕵️ **%v** Validators\n\n", formatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("🦾 **%v** PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🦾 **%v PAC** Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("🔄 **%v PAC** Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
-	s.WriteString("🧑🏻‍⚕️ Network Status\n\n")
-	s.WriteString(fmt.Sprintf("```Details Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
+	s.WriteString(fmt.Sprintf("```🧑🏻‍⚕️NetworkStatus Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
 
 	return s.String()
 }
