@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -32,7 +33,7 @@ func main() {
 		fmt.Printf("client added %s\n", rn)
 	}
 
-	b, err := bot.New("6632503496:AAEr6zh6btUazt74T5xe9UI_gi2A31MBD10", nil)
+	b, err := bot.New(os.Args[0], nil)
 	if err != nil {
 		panic(err)
 	}
