@@ -33,7 +33,8 @@ func main() {
 		fmt.Printf("client added %s\n", rn)
 	}
 
-	b, err := bot.New(os.Args[0], nil)
+	botToken := os.Args[1]
+	b, err := bot.New(botToken, bot.WithAllowedUpdates(bot.AllowedUpdates{}))
 	if err != nil {
 		panic(err)
 	}
