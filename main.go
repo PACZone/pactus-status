@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
 	"strconv"
 	"strings"
 	"time"
@@ -18,8 +16,7 @@ import (
 var rpcNodes = []string{"181.214.208.165:50051", "bootstrap1.pactus.org:50051", "bootstrap2.pactus.org:50051", "bootstrap3.pactus.org:50051", "bootstrap4.pactus.org:50051", "151.115.110.114:50051", "188.121.116.247:50051"}
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
+	ctx := context.Background()
 
 	fmt.Println("starting")
 
