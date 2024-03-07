@@ -82,7 +82,7 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("**%s** is Last Block Height⛓️\n\n", formatNumber(int64(lastBlkH))))
 	s.WriteString(fmt.Sprintf("**%v** Active Accounts👤\n\n", formatNumber(int64(b.TotalAccounts))))
 	s.WriteString(fmt.Sprintf("**%v** Total Validators🕵️\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("**%v** Total PAC Staked (network power)🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("**%v** Total PAC Staked or network power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
 	s.WriteString(fmt.Sprintf("**%v PAC** is Committee Power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
 	s.WriteString(fmt.Sprintf("**%v PAC** is in Circulating🔄\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
