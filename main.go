@@ -46,6 +46,13 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
+	m, _ := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: "@pactus_status",
+		Text: ".",
+	})
+
+	messageID := m.ID
+
 	for {
 		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
@@ -64,7 +71,7 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 		fmt.Println("got circ supply successfully")
 
 		msg := makeMessage(bi, cs, td, status, lbt, lbh)
-		_, err = b.EditMessageText(ctx, makeMessageParams(msg))
+		_, err = b.EditMessageText(ctx, makeMessageParams(msg, messageID))
 		if err != nil {
 			fmt.Printf("can't post updates: %v\n", err)
 		}
@@ -77,16 +84,16 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status, lastBlkTime string, lastBlkH uint32) string {
 	var s strings.Builder
 
-	s.WriteString("Pactus Network Status Update 🔴\n\n")
+	s.WriteString("🔴 Pactus Network Status Update\n\n")
 	s.WriteString("Blockchain Info\n\n")
-	s.WriteString(fmt.Sprintf("**%s** is Last Block Height⛓️\n\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("**%v** Active Accounts👤\n\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("**%v** Total Validators🕵️\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("**%v** Total PAC Staked or network power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("**%v PAC** is Committee Power🦾\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("**%v PAC** is in Circulating🔄\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString(fmt.Sprintf("⛓️ **%s** is Last Block Height\n\n", formatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("👤 **%v** Active Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("🕵️ **%v** Total Validators\n\n", formatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("🦾 **%v** Total PAC Staked or network power\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🦾 **%v PAC** is Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("🔄 **%v PAC** is in Circulating\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 
-	s.WriteString("Network Status🧑🏻‍⚕️\n\n")
+	s.WriteString("🧑🏻‍⚕️ Network Status\n\n")
 	s.WriteString(fmt.Sprintf("Network is **%s**\n\n**%s** is The LastBlock time and there is **%v seconds** passed from last block", status, lastBlkTime, timeDiff))
 
 	return s.String()
@@ -114,12 +121,12 @@ func networkHealth(cmgr *client.Mgr) (string, string, uint32, int64) {
 	return status, lastBlockTimeFormatted, lastBlockHeight, timeDiff
 }
 
-func makeMessageParams(t string) *bot.EditMessageTextParams {
+func makeMessageParams(t string, mi int) *bot.EditMessageTextParams {
 	return &bot.EditMessageTextParams{
 		ChatID:    "@pactus_status",
 		Text:      t,
 		ParseMode: models.ParseModeMarkdown,
-		MessageID: 12,
+		MessageID: mi,
 	}
 }
 
