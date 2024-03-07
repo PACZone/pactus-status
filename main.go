@@ -84,7 +84,7 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status, lastBlkTime string, lastBlkH uint32) string {
 	var s strings.Builder
 
-	s.WriteString("🔴 Pactus Network Status Update\n\n")
+	s.WriteString("🟢 Pactus Network Status Update\n\n")
 	s.WriteString("ℹ️ Blockchain Info\n\n")
 	s.WriteString(fmt.Sprintf("⛓️ **%s** Last Block Height\n\n", formatNumber(int64(lastBlkH))))
 	s.WriteString(fmt.Sprintf("👤 **%v** Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
