@@ -76,8 +76,6 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 			fmt.Printf("can't post updates: %v\n", err)
 		}
 		fmt.Println("updated posted successfully")
-
-		time.Sleep(1 * time.Minute)
 	}
 }
 
