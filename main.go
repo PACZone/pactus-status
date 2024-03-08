@@ -92,7 +92,7 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("🦾 **%v** PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
 	s.WriteString(fmt.Sprintf("🦾 **%v PAC** Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
 	s.WriteString(fmt.Sprintf("🔄 **%v PAC** Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
-	s.WriteString(fmt.Sprintf("🪙 **%v PAC** Total exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🪙 **%v** Total PAC Exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
 	s.WriteString(fmt.Sprintf("```🧑🏻‍⚕️NetworkStatus Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
 
