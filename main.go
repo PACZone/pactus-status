@@ -101,7 +101,7 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("🔄 **%v PAC** Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 	s.WriteString(fmt.Sprintf("🪙 **%v** Total PAC Exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
-	s.WriteString("Note This the last price of Exbitron and it's an unofficial listing (no financial advice/DYOR)")
+	s.WriteString("Note This the last price of Exbitron and it's an unofficial listing. no financial advice/DYOR")
 	s.WriteString(fmt.Sprintf("📈 **%s$** Exbitron Price\n\n", price))
 
 	s.WriteString(fmt.Sprintf("```🧑🏻‍⚕️NetworkStatus Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
