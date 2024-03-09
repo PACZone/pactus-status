@@ -97,9 +97,9 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("🔄 %v PAC Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
 	s.WriteString(fmt.Sprintf("🪙 %v PAC Total Supply\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
-	s.WriteString(fmt.Sprintf("📊 %v$ MarketCap\n\n", mcap))
-	s.WriteString(fmt.Sprintf("💹 %v$ FDV\n\n", fdv))
-	s.WriteString(fmt.Sprintf("🔒 %v$ TVL\n\n", tvl))
+	s.WriteString(fmt.Sprintf("📊 %v$ MarketCap\n\n", formatNumber(int64(mcap))))
+	s.WriteString(fmt.Sprintf("💹 %v$ FDV\n\n", formatNumber(int64(fdv))))
+	s.WriteString(fmt.Sprintf("🔒 %v$ TVL\n\n", formatNumber(int64(tvl))))
 
 	s.WriteString(fmt.Sprintf("📈 Exbitron Price %v$ \n\n", price))
 
