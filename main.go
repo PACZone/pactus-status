@@ -167,11 +167,15 @@ func getPrice() string {
 		return "N/A"
 	}
 
+	fmt.Println(prices)
+
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
 		return "N/A"
 	}
+
+	fmt.Println(prices)
 
 	err = json.Unmarshal(data, &prices)
 	if err != nil {
@@ -179,9 +183,9 @@ func getPrice() string {
 		return "N/A"
 	}
 
+	fmt.Println(prices)
 	price, ok := prices["PAC_USDT"]
 	if !ok {
-		fmt.Println(prices)
 		return "N/A"
 	}
 
