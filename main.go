@@ -50,7 +50,6 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
-
 	for {
 		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
@@ -82,8 +81,12 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 	}
 }
 
-func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status, lastBlkTime, price string, lastBlkH uint32) string {
+func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status, lastBlkTime string, price float64, lastBlkH uint32) string {
 	var s strings.Builder
+
+	mcap := float64(util.ChangeToCoin(c)) * price
+	fdv := float64(util.ChangeToCoin(c+b.TotalPower)) * price
+	tvl := float64(util.ChangeToCoin(b.TotalPower)) * price
 
 	s.WriteString("🟢 Pactus Network Status Update\n\n")
 	s.WriteString(fmt.Sprintf("⛓️ %s Last Block Height\n\n", formatNumber(int64(lastBlkH))))
@@ -92,10 +95,13 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString(fmt.Sprintf("🦾 %v PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
 	s.WriteString(fmt.Sprintf("🦾 %v PAC Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
 	s.WriteString(fmt.Sprintf("🔄 %v PAC Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
-	s.WriteString(fmt.Sprintf("🪙 %v Total PAC Exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🪙 %v PAC Total Supply\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
-	s.WriteString("Note This the last price of Exbitron and it's an unofficial listing\nno financial advice/DYOR\n\n")
-	s.WriteString(fmt.Sprintf("📈 Exbitron Price %s$ \n\n", price))
+	s.WriteString(fmt.Sprintf("📊 %v$ MarketCap\n\n", mcap))
+	s.WriteString(fmt.Sprintf("💹 %v$ FDV\n\n", fdv))
+	s.WriteString(fmt.Sprintf("🔒 %v$ TVL\n\n", tvl))
+
+	s.WriteString(fmt.Sprintf("📈 Exbitron Price %v$ \n\n", price))
 
 	s.WriteString(fmt.Sprintf("Network is %s\n%s is The LastBlock time and there is %v seconds passed from last block", status, lastBlkTime, timeDiff))
 
@@ -150,13 +156,13 @@ type PriceExbitronAPI struct {
 	LastPrice string `json:"last_price"`
 }
 
-func getPrice() string {
+func getPrice() float64 {
 	prices := make(map[string]map[string]PriceExbitronAPI)
 
 	resp, err := http.Get(priceEndPoint)
 	if err != nil {
 		fmt.Println(err)
-		return "N/A"
+		return 0
 	}
 
 	fmt.Println(prices)
@@ -164,7 +170,7 @@ func getPrice() string {
 	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println(err)
-		return "N/A"
+		return 0
 	}
 
 	fmt.Println(prices)
@@ -172,14 +178,20 @@ func getPrice() string {
 	err = json.Unmarshal(data, &prices)
 	if err != nil {
 		fmt.Println(err)
-		return "N/A"
+		return 0
 	}
 
 	fmt.Println(prices)
 	price, ok := prices["ticker_name"]["PAC_USDT"]
 	if !ok {
-		return "N/A"
+		return 0
 	}
 
-	return price.LastPrice
+	num, err := strconv.ParseFloat(price.LastPrice, 64)
+	if err != nil {
+		fmt.Println("Error parsing input:", err)
+		return 0
+	}
+
+	return num
 }
