@@ -93,16 +93,16 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	var s strings.Builder
 
 	s.WriteString("🟢 Pactus Network Status Update\n\n")
-	s.WriteString(fmt.Sprintf("⛓️ **%s** Last Block Height\n\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("👤 **%v** Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("🕵️ **%v** Validators\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("🦾 **%v** PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("🦾 **%v PAC** Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("🔄 **%v PAC** Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
-	s.WriteString(fmt.Sprintf("🪙 **%v** Total PAC Exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("⛓️ %s Last Block Height\n\n", formatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("👤 %v Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("🕵️ %v Validators\n\n", formatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("🦾 %v PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🦾 %v PAC Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("🔄 %v PAC Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString(fmt.Sprintf("🪙 %v Total PAC Exist\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
 	s.WriteString("Note This the last price of Exbitron and it's an unofficial listing\nno financial advice/DYOR\n")
-	s.WriteString(fmt.Sprintf("📈 **%s$** Exbitron Price\n\n", price))
+	s.WriteString(fmt.Sprintf("📈 Exbitron Price \\%s$\\ \n\n", price))
 
 	s.WriteString(fmt.Sprintf("```🧑🏻‍⚕️NetworkStatus Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
 
