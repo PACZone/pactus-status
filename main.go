@@ -154,6 +154,10 @@ func formatNumber(num int64) string {
 	return formattedNum
 }
 
+type PriceExbitronAPI struct {
+	LastPrice string `json:"last_price"`
+}
+
 func getPrice() string {
 	prices := make(map[string]PriceExbitronAPI)
 
