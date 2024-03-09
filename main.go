@@ -159,7 +159,7 @@ type PriceExbitronAPI struct {
 }
 
 func getPrice() string {
-	prices := make(map[string]PriceExbitronAPI)
+	prices := make(map[string]map[string]PriceExbitronAPI)
 
 	resp, err := http.Get(priceEndPoint)
 	if err != nil {
@@ -184,7 +184,7 @@ func getPrice() string {
 	}
 
 	fmt.Println(prices)
-	price, ok := prices["PAC_USDT"]
+	price, ok := prices["ticker_name"]["PAC_USDT"]
 	if !ok {
 		return "N/A"
 	}
