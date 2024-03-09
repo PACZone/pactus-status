@@ -50,6 +50,7 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
+
 	for {
 		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
@@ -71,7 +72,7 @@ func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
 		fmt.Println("got price successfully")
 
 		msg := makeMessage(bi, cs, td, status, lbt, price, lbh)
-		_, err = b.EditMessageText(ctx, makeMessageParams(msg, 27))
+		_, err = b.EditMessageText(ctx, makeMessageParams(msg, 37))
 		if err != nil {
 			fmt.Printf("can't post updates: %v\n", err)
 		}
