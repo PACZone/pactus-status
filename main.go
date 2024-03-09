@@ -181,6 +181,7 @@ func getPrice() string {
 
 	price, ok := prices["PAC_USDT"]
 	if !ok {
+		fmt.Println(prices)
 		return "N/A"
 	}
 
