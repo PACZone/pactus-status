@@ -51,13 +51,6 @@ func main() {
 }
 
 func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
-	m, _ := b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: "@pactus_status",
-		Text:   ".",
-	})
-
-	_ = m.ID
-
 	for {
 		fmt.Println("posting new update!")
 		status, lbt, lbh, td := networkHealth(cmgr)
