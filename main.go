@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
 	"github.com/kehiy/pactatus/client"
 	"github.com/pactus-project/pactus/util"
 	pactus "github.com/pactus-project/pactus/www/grpc/gen/go"
@@ -97,7 +96,7 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	s.WriteString("Note This the last price of Exbitron and it's an unofficial listing\nno financial advice/DYOR\n")
 	s.WriteString(fmt.Sprintf("📈 Exbitron Price \\%s\\$ \n\n", price))
 
-	s.WriteString(fmt.Sprintf("```🧑🏻‍⚕️NetworkStatus Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block```", status, lastBlkTime, timeDiff))
+	s.WriteString(fmt.Sprintf("Network is %s\n\n%s is The LastBlock time and there is %v seconds passed from last block", status, lastBlkTime, timeDiff))
 
 	return s.String()
 }
@@ -128,7 +127,6 @@ func makeMessageParams(t string, mi int) *bot.EditMessageTextParams {
 	return &bot.EditMessageTextParams{
 		ChatID:    "@pactus_status",
 		Text:      t,
-		ParseMode: models.ParseModeMarkdown,
 		MessageID: mi,
 	}
 }
