@@ -19,7 +19,7 @@ import (
 
 const priceEndPoint = "https://api.exbitron.digital/api/v1/cmc/ticker"
 
-var rpcNodes = []string{"181.214.208.165:50051", "bootstrap1.pactus.org:50051", "bootstrap2.pactus.org:50051", "bootstrap3.pactus.org:50051", "bootstrap4.pactus.org:50051", "151.115.110.114:50051", "188.121.116.247:50051"}
+var rpcNodes = []string{}
 
 func main() {
 	ctx := context.Background()
@@ -34,7 +34,7 @@ func main() {
 			fmt.Printf("error: %v adding client %s\n", e, rn)
 			continue
 		}
-		cmgr.AddClient(c)
+		cmgr.AddClient(*c)
 		fmt.Printf("client added %s\n", rn)
 	}
 

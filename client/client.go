@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"errors"
 
 	pactus "github.com/pactus-project/pactus/www/grpc/gen/go"
 	"google.golang.org/grpc"
@@ -56,55 +55,6 @@ func (c *Client) GetNetworkInfo(ctx context.Context) (*pactus.GetNetworkInfoResp
 	return networkInfo, nil
 }
 
-func (c *Client) GetPeerInfo(ctx context.Context, address string) (*pactus.PeerInfo, error) {
-	networkInfo, _ := c.GetNetworkInfo(ctx)
-	if networkInfo != nil {
-		for _, p := range networkInfo.ConnectedPeers {
-			for _, addr := range p.ConsensusAddress {
-				if addr != "" {
-					if addr == address {
-						return p, nil
-					}
-				}
-			}
-		}
-	}
-	return nil, errors.New("peer does not exist")
-}
-
-func (c *Client) GetValidatorInfo(ctx context.Context, address string) (*pactus.GetValidatorResponse, error) {
-	validator, err := c.blockchainClient.GetValidator(ctx,
-		&pactus.GetValidatorRequest{Address: address})
-	if err != nil {
-		return nil, err
-	}
-
-	return validator, nil
-}
-
-func (c *Client) GetValidatorInfoByNumber(ctx context.Context, num int32) (*pactus.GetValidatorResponse, error) {
-	validator, err := c.blockchainClient.GetValidatorByNumber(ctx,
-		&pactus.GetValidatorByNumberRequest{Number: num})
-	if err != nil {
-		return nil, err
-	}
-
-	return validator, nil
-}
-
-func (c *Client) TransactionData(ctx context.Context, hash string) (*pactus.TransactionInfo, error) {
-	data, err := c.transactionClient.GetTransaction(ctx,
-		&pactus.GetTransactionRequest{
-			Id:        []byte(hash),
-			Verbosity: pactus.TransactionVerbosity_TRANSACTION_DATA,
-		})
-	if err != nil {
-		return nil, err
-	}
-
-	return data.GetTransaction(), nil
-}
-
 func (c *Client) LastBlockTime(ctx context.Context) (uint32, uint32, error) {
 	info, err := c.blockchainClient.GetBlockchainInfo(ctx, &pactus.GetBlockchainInfoRequest{})
 	if err != nil {
@@ -117,22 +67,6 @@ func (c *Client) LastBlockTime(ctx context.Context) (uint32, uint32, error) {
 	})
 
 	return lastBlockTime.BlockTime, info.LastBlockHeight, err
-}
-
-func (c *Client) GetNodeInfo(ctx context.Context) (*pactus.GetNodeInfoResponse, error) {
-	info, err := c.networkClient.GetNodeInfo(ctx, &pactus.GetNodeInfoRequest{})
-	if err != nil {
-		return &pactus.GetNodeInfoResponse{}, err
-	}
-
-	return info, err
-}
-
-func (c *Client) GetTransactionData(ctx context.Context, txID string) (*pactus.GetTransactionResponse, error) {
-	return c.transactionClient.GetTransaction(ctx, &pactus.GetTransactionRequest{
-		Id:        []byte(txID),
-		Verbosity: pactus.TransactionVerbosity_TRANSACTION_DATA,
-	})
 }
 
 func (c *Client) GetBalance(ctx context.Context, address string) (int64, error) {
