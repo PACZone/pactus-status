@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/PACZone/pactus-status/client"
 	"github.com/go-telegram/bot"
-	"github.com/kehiy/pactatus/client"
 	"github.com/pactus-project/pactus/util"
 	pactus "github.com/pactus-project/pactus/www/grpc/gen/go"
 )
