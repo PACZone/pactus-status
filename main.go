@@ -2,80 +2,92 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-	"strconv"
+	"log"
 	"strings"
 	"time"
 
 	"github.com/PACZone/pactus-status/client"
+	"github.com/PACZone/pactus-status/config"
+	"github.com/PACZone/pactus-status/utils"
 	"github.com/go-telegram/bot"
 	"github.com/pactus-project/pactus/util"
 	pactus "github.com/pactus-project/pactus/www/grpc/gen/go"
 )
 
-const priceEndPoint = "https://api.exbitron.digital/api/v1/cmc/ticker"
-
-var rpcNodes = []string{}
+type StatusChecker struct {
+	ctx   context.Context
+	cfg   config.Config
+	cmgr  *client.Mgr
+	tgbot *bot.Bot
+}
 
 func main() {
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Panic(err)
+	}
+
 	ctx := context.Background()
 
-	fmt.Println("starting")
+	log.Println("starting")
 
 	cmgr := client.NewClientMgr(ctx)
 
-	for _, rn := range rpcNodes {
+	for _, rn := range cfg.RPCNodes {
 		c, e := client.NewClient(rn)
 		if e != nil {
-			fmt.Printf("error: %v adding client %s\n", e, rn)
+			log.Printf("error: %v adding client %s\n", e, rn)
 			continue
 		}
 		cmgr.AddClient(*c)
-		fmt.Printf("client added %s\n", rn)
+		log.Printf("client added %s\n", rn)
 	}
 
-	botToken := os.Args[1]
-	b, err := bot.New(botToken, bot.WithAllowedUpdates(bot.AllowedUpdates{}))
+	b, err := bot.New(cfg.BotToken, bot.WithAllowedUpdates(bot.AllowedUpdates{}))
 	if err != nil {
 		panic(err)
 	}
 
-	go PostUpdates(ctx, b, cmgr)
+	sc := StatusChecker{
+		ctx:   ctx,
+		cfg:   cfg,
+		cmgr:  cmgr,
+		tgbot: b,
+	}
+
+	go sc.postUpdates()
 
 	b.Start(ctx)
 }
 
-func PostUpdates(ctx context.Context, b *bot.Bot, cmgr *client.Mgr) {
+func (sc *StatusChecker) postUpdates() {
 	for {
-		fmt.Println("posting new update!")
-		status, lbt, lbh, td := networkHealth(cmgr)
-		bi, err := cmgr.GetBlockchainInfo()
+		log.Println("posting new update!")
+		status, lbt, lbh, td := networkHealth(sc.cmgr)
+		bi, err := sc.cmgr.GetBlockchainInfo()
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Println("got network health and Blockcahin info successfully")
+		log.Println("got network health and Blockcahin info successfully")
 
-		cs, err := cmgr.GetCirculatingSupply()
+		cs, err := sc.cmgr.GetCirculatingSupply()
 		if err != nil {
 			panic(err)
 		}
 
-		fmt.Println("got circ supply successfully")
+		log.Println("got circ supply successfully")
 
-		price := getPrice()
-		fmt.Println("got price successfully")
+		price := utils.GetPACPrice(sc.cfg.PriceAPI)
+		log.Println("got price successfully")
 
 		msg := makeMessage(bi, cs, td, status, lbt, price, lbh)
-		_, err = b.EditMessageText(ctx, makeMessageParams(msg, 37))
+		_, err = sc.tgbot.EditMessageText(sc.ctx, utils.MakeMessageParams(msg, 37))
 		if err != nil {
-			fmt.Printf("can't post updates: %v\n", err)
+			log.Printf("can't post updates: %v\n", err)
 		}
-		fmt.Println("updated posted successfully")
+		log.Println("updated posted successfully")
 
 		time.Sleep(7 * time.Second)
 	}
@@ -89,17 +101,17 @@ func makeMessage(b *pactus.GetBlockchainInfoResponse, c, timeDiff int64, status,
 	tvl := float64(util.ChangeToCoin(b.TotalPower)) * price
 
 	s.WriteString("🟢 Pactus Network Status Update\n\n")
-	s.WriteString(fmt.Sprintf("⛓️ %s Last Block Height\n\n", formatNumber(int64(lastBlkH))))
-	s.WriteString(fmt.Sprintf("👤 %v Accounts\n\n", formatNumber(int64(b.TotalAccounts))))
-	s.WriteString(fmt.Sprintf("🕵️ %v Validators\n\n", formatNumber(int64(b.TotalValidators))))
-	s.WriteString(fmt.Sprintf("🦾 %v PAC Staked\n\n", formatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
-	s.WriteString(fmt.Sprintf("🦾 %v PAC Committee Power\n\n", formatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
-	s.WriteString(fmt.Sprintf("🔄 %v PAC Circulating Supply\n\n", formatNumber(int64(util.ChangeToCoin(c)))))
-	s.WriteString(fmt.Sprintf("🪙 %v PAC Total Supply\n\n", formatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("⛓️ %s Last Block Height\n\n", utils.FormatNumber(int64(lastBlkH))))
+	s.WriteString(fmt.Sprintf("👤 %v Accounts\n\n", utils.FormatNumber(int64(b.TotalAccounts))))
+	s.WriteString(fmt.Sprintf("🕵️ %v Validators\n\n", utils.FormatNumber(int64(b.TotalValidators))))
+	s.WriteString(fmt.Sprintf("🦾 %v PAC Staked\n\n", utils.FormatNumber(int64(util.ChangeToCoin(b.TotalPower)))))
+	s.WriteString(fmt.Sprintf("🦾 %v PAC Committee Power\n\n", utils.FormatNumber(int64(util.ChangeToCoin(b.CommitteePower)))))
+	s.WriteString(fmt.Sprintf("🔄 %v PAC Circulating Supply\n\n", utils.FormatNumber(int64(util.ChangeToCoin(c)))))
+	s.WriteString(fmt.Sprintf("🪙 %v PAC Total Supply\n\n", utils.FormatNumber(int64(util.ChangeToCoin(c+b.TotalPower)))))
 
-	s.WriteString(fmt.Sprintf("📊 %v$ Market Cap\n\n", formatNumber(int64(mcap))))
-	s.WriteString(fmt.Sprintf("💹 %v$ Fully Diluted Value (FDV)\n\n", formatNumber(int64(fdv))))
-	s.WriteString(fmt.Sprintf("🔒 %v$ Total Value Locked (TVL)\n\n", formatNumber(int64(tvl))))
+	s.WriteString(fmt.Sprintf("📊 %v$ Market Cap\n\n", utils.FormatNumber(int64(mcap))))
+	s.WriteString(fmt.Sprintf("💹 %v$ Fully Diluted Value (FDV)\n\n", utils.FormatNumber(int64(fdv))))
+	s.WriteString(fmt.Sprintf("🔒 %v$ Total Value Locked (TVL)\n\n", utils.FormatNumber(int64(tvl))))
 
 	s.WriteString(fmt.Sprintf("📈 Exbitron Price %v$ \n\n", price))
 
@@ -128,70 +140,4 @@ func networkHealth(cmgr *client.Mgr) (string, string, uint32, int64) {
 	}
 
 	return status, lastBlockTimeFormatted, lastBlockHeight, timeDiff
-}
-
-func makeMessageParams(t string, mi int) *bot.EditMessageTextParams {
-	return &bot.EditMessageTextParams{
-		ChatID:    "@pactus_status",
-		Text:      t,
-		MessageID: mi,
-	}
-}
-
-func formatNumber(num int64) string {
-	numStr := strconv.FormatInt(num, 10)
-
-	var formattedNum string
-	for i, c := range numStr {
-		if (i > 0) && (len(numStr)-i)%3 == 0 {
-			formattedNum += ","
-		}
-		formattedNum += string(c)
-	}
-
-	return formattedNum
-}
-
-type PriceExbitronAPI struct {
-	LastPrice string `json:"last_price"`
-}
-
-func getPrice() float64 {
-	prices := make(map[string]map[string]PriceExbitronAPI)
-
-	resp, err := http.Get(priceEndPoint)
-	if err != nil {
-		fmt.Println(err)
-		return 0
-	}
-
-	fmt.Println(prices)
-
-	data, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-		return 0
-	}
-
-	fmt.Println(prices)
-
-	err = json.Unmarshal(data, &prices)
-	if err != nil {
-		fmt.Println(err)
-		return 0
-	}
-
-	fmt.Println(prices)
-	price, ok := prices["ticker_name"]["PAC_USDT"]
-	if !ok {
-		return 0
-	}
-
-	num, err := strconv.ParseFloat(price.LastPrice, 64)
-	if err != nil {
-		fmt.Println("Error parsing input:", err)
-		return 0
-	}
-
-	return num
 }
