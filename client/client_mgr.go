@@ -30,11 +30,6 @@ func (cm *Mgr) AddClient(c Client) {
 	cm.clients = append(cm.clients, c)
 }
 
-// NOTE: local client is always the first client.
-func (cm *Mgr) getLocalClient() *Client {
-	return &cm.clients[0]
-}
-
 func (cm *Mgr) GetRandomClient() Client {
 	for _, c := range cm.clients {
 		return c
